@@ -46,6 +46,11 @@ wealth-intelligence-ai/
 6. [Compliance & guardrails blueprint](docs/05-compliance.md)
 7. [Roadmap (MVP → V1 → V2)](docs/06-roadmap.md)
 
+Plus, for fundraising & regulatory planning:
+
+- [Pitch deck outline](docs/07-pitch-deck-outline.md)
+- [QFMA licensing checklist](docs/08-qfma-licensing-checklist.md)
+
 ## Quick start (dev)
 
 ```bash
