@@ -11,6 +11,8 @@ from app.api.v1.endpoints import (
     reports,
     signals,
     usage,
+    watchlists,
+    webhooks,
 )
 
 api_router = APIRouter()
@@ -20,5 +22,7 @@ api_router.include_router(portfolios.router)
 api_router.include_router(signals.router)
 api_router.include_router(reports.router)
 api_router.include_router(alerts.router)
+api_router.include_router(watchlists.router)
+api_router.include_router(webhooks.router)
 api_router.include_router(usage.router)
 api_router.include_router(audit.router)

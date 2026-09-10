@@ -8,7 +8,7 @@ from app.api.deps import Principal, get_principal, meter, rate_limit
 from app.api.v1.endpoints._guard import guard_ctx
 from app.models import Portfolio, Position
 from app.repository import repo
-from app.schemas.api import AnalyzeRequest, PortfolioCreate, PortfolioOut
+from app.schemas.api import AnalyzeRequest, ConstructRequest, PortfolioCreate, PortfolioOut
 from app.schemas.envelope import Envelope
 from app.services.ai import engine
 from app.services.ai.agents import PortfolioAgent
@@ -77,6 +77,30 @@ async def analyze(
     ctx = guard_ctx(principal, request, body.language)
     scenarios = [s.model_dump() for s in body.scenarios]
     return engine.analyze_portfolio(portfolio=pf, gctx=ctx, scenarios=scenarios)
+
+
+@router.post("/construct", response_model=Envelope)
+async def construct(
+    body: ConstructRequest,
+    request: Request,
+    principal: Principal = Depends(get_principal),
+    _rl: None = Depends(rate_limit),
+    _m: None = Depends(meter),
+) -> Envelope:
+    """Model-portfolio construction under constraints (suggestions only)."""
+    if body.universe:
+        assets = [a for s in body.universe if (a := repo.asset_by_symbol(s))]
+    else:
+        assets = list(repo.assets.values())
+    if not assets:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "no valid assets in universe")
+    ctx = guard_ctx(principal, request, body.language)
+    return engine.construct_portfolio(
+        assets=assets,
+        risk_profile=body.risk_profile,
+        max_position_weight=body.max_position_weight,
+        gctx=ctx,
+    )
 
 
 @router.post("/{portfolio_id}/rebalance")

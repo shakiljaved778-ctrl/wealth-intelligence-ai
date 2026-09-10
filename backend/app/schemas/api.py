@@ -86,6 +86,15 @@ class AnalyzeRequest(BaseModel):
     scenarios: list[ScenarioSpec] = Field(default_factory=list)
 
 
+class ConstructRequest(BaseModel):
+    """Model-portfolio construction under constraints (suggestions only)."""
+
+    universe: list[str] = Field(default_factory=list)  # symbols; empty = all seeded assets
+    risk_profile: Literal["conservative", "balanced", "growth"] = "balanced"
+    max_position_weight: float = 0.4
+    language: Language = "en"
+
+
 # ---- Signals ---------------------------------------------------------------
 class SignalGenerateRequest(BaseModel):
     symbol: str
@@ -133,6 +142,33 @@ class AlertOut(BaseModel):
     severity: Literal["info", "material", "critical"]
     message: str
     read: bool
+
+
+# ---- Watchlists ------------------------------------------------------------
+class WatchlistCreate(BaseModel):
+    name: str
+    symbols: list[str] = Field(default_factory=list)
+    rules: dict[str, Any] = Field(default_factory=dict)
+
+
+class WatchlistOut(BaseModel):
+    id: str
+    name: str
+    asset_ids: list[str]
+    rules: dict[str, Any]
+
+
+# ---- Webhooks --------------------------------------------------------------
+class WebhookCreate(BaseModel):
+    url: str
+    events: list[str] = Field(default_factory=lambda: ["alert.raised"])
+
+
+class WebhookOut(BaseModel):
+    id: str
+    url: str
+    events: list[str]
+    active: bool
 
 
 # The analyze/deep-dive endpoints return the Envelope directly.

@@ -19,6 +19,8 @@ from app.models.entities import (
     Signal,
     UsageRecord,
     User,
+    Watchlist,
+    Webhook,
 )
 
 __all__ = [
@@ -35,4 +37,6 @@ __all__ = [
     "Signal",
     "UsageRecord",
     "User",
+    "Watchlist",
+    "Webhook",
 ]

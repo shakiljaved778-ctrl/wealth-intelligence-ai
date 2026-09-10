@@ -14,6 +14,8 @@ from app.models import (
     Signal,
     UsageRecord,
     User,
+    Watchlist,
+    Webhook,
 )
 
 
@@ -27,6 +29,8 @@ class Repository:
         self.reports: dict[str, Report] = {}
         self.alerts: dict[str, Alert] = {}
         self.api_keys: dict[str, ApiKey] = {}
+        self.watchlists: dict[str, Watchlist] = {}
+        self.webhooks: dict[str, Webhook] = {}
         self.usage: list[UsageRecord] = []
         # Raw, append-only fact stores keyed by asset id.
         self._prices: dict[str, list[PriceBar]] = {}
@@ -85,6 +89,17 @@ class Repository:
             (k for k in self.api_keys.values() if k.hashed_key == hashed and not k.revoked),
             None,
         )
+
+    def add_watchlist(self, wl: Watchlist) -> Watchlist:
+        self.watchlists[wl.id] = wl
+        return wl
+
+    def add_webhook(self, wh: Webhook) -> Webhook:
+        self.webhooks[wh.id] = wh
+        return wh
+
+    def webhooks_for_event(self, org_id: str, event: str) -> list[Webhook]:
+        return [w for w in self.webhooks.values() if w.organization_id == org_id and w.active and event in w.events]
 
     def record_usage(self, record: UsageRecord) -> None:
         self.usage.append(record)
