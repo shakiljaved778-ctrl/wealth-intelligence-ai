@@ -108,3 +108,23 @@ Where a derived metric or narrative rests on estimates, the engine attaches a
 confidence/uncertainty indicator (e.g. dispersion of estimates, data
 completeness, model calibration) to the `derived`/`narrative` items and the
 audit record — so downstream UIs can show it and never imply false precision.
+
+## 4.7 LLM provider
+
+The generation step is behind a small provider interface
+([`backend/app/services/ai/llm.py`](../backend/app/services/ai/llm.py)) so the
+engine is model-agnostic:
+
+- **`StubLLM`** (default) — deterministic and offline; echoes only the grounded
+  context, so it never fabricates figures. Used by the scaffold and CI.
+- **`AnthropicLLM`** — real generation via the Anthropic SDK (optional extra
+  `llm`). Selected only when `WIA_LLM_PROVIDER=anthropic` **and** an API key is
+  set; any failure (missing SDK, bad config) falls back to the stub so a request
+  never crashes on LLM setup. It relays the caller's grounded system+prompt
+  unchanged (the grounding contract is enforced by the prompt, not the client),
+  skips non-text blocks, and records the served model string in the audit record
+  as `model_version`. Default model when unset: `claude-opus-5`.
+
+Whatever the provider, the guardrail layer still assembles the three-layer
+envelope, enforces compliance, and writes the audit record — so swapping in a
+real model changes *how well* narratives read, never the invariants.
