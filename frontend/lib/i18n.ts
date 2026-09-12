@@ -34,6 +34,20 @@ const STRINGS: Dict = {
   downloadReport: { en: "Download report", ar: "تنزيل التقرير" },
   addFavourite: { en: "Add to favourites", ar: "أضف إلى المفضلة" },
   priceHistory: { en: "Price history (daily close)", ar: "سجل الأسعار (الإغلاق اليومي)" },
+  portfoliosSubtitle: {
+    en: "Model & client portfolios — analyze risk, factors, and scenarios.",
+    ar: "محافظ نموذجية ومحافظ عملاء — تحليل المخاطر والعوامل والسيناريوهات.",
+  },
+  reportsSubtitle: {
+    en: "Client-ready reports in English & Arabic — generated asynchronously.",
+    ar: "تقارير جاهزة للعملاء بالإنجليزية والعربية — تُنشأ بشكل غير متزامن.",
+  },
+  holdings: { en: "Holdings", ar: "المكوّنات" },
+  requestReport: { en: "Request report", ar: "طلب تقرير" },
+  refresh: { en: "Refresh", ar: "تحديث" },
+  subjectSymbol: { en: "Subject symbol", ar: "رمز الأصل" },
+  kind: { en: "Kind", ar: "النوع" },
+  noReports: { en: "No reports yet.", ar: "لا توجد تقارير بعد." },
 };
 
 export function t(key: keyof typeof STRINGS | string, lang: Lang): string {

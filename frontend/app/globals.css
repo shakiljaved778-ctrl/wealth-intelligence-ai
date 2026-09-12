@@ -123,6 +123,16 @@ h3 { font-size: 15px; letter-spacing: -0.01em; margin: 0 0 4px; }
 .badge.derived { color: var(--derived); border-color: color-mix(in srgb, var(--derived) 35%, var(--border)); }
 .badge.narrative { color: var(--narrative); border-color: color-mix(in srgb, var(--narrative) 35%, var(--border)); }
 .badge.speculative { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, var(--border)); }
+/* report status badges */
+.badge.status-ready { color: var(--observed); border-color: color-mix(in srgb, var(--observed) 35%, var(--border)); }
+.badge.status-generating { color: var(--derived); border-color: color-mix(in srgb, var(--derived) 35%, var(--border)); }
+.badge.status-queued { color: var(--muted); }
+.badge.status-failed { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, var(--border)); }
+
+/* page header (title + subtitle + right-aligned controls) */
+.page-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+.page-head .grow { margin-inline-end: auto; }
+.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
 .chip {
   display: inline-flex;
