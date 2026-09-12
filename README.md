@@ -50,6 +50,7 @@ Plus, for fundraising & regulatory planning:
 
 - [Pitch deck outline](docs/07-pitch-deck-outline.md)
 - [QFMA licensing checklist](docs/08-qfma-licensing-checklist.md)
+- [Deployment (Vercel)](docs/09-deployment.md)
 
 ## Quick start (dev)
 
@@ -70,6 +71,23 @@ npm run dev                        # http://localhost:3000
 # Or everything at once
 docker compose up --build
 ```
+
+## Deploy
+
+The frontend deploys to **Vercel** out of the box (Root Directory `frontend`);
+the FastAPI backend can run as a Vercel Python serverless function for demos, or
+on the region-pinned AWS topology for production. Config lives in
+`frontend/vercel.json` and `backend/vercel.json`; full walkthrough (env vars,
+statelessness caveats, secrets handling) in
+[`docs/09-deployment.md`](docs/09-deployment.md).
+
+```bash
+# Frontend (from frontend/, after `vercel link`)
+vercel env add NEXT_PUBLIC_API_BASE_URL production   # → your backend URL
+vercel --prod
+```
+
+Secrets are set only in the Vercel dashboard / `vercel env` — never committed.
 
 ## Status
 

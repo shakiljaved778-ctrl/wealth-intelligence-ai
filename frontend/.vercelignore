@@ -1,0 +1,6 @@
+# Vercel builds from source; these are local/CI artifacts.
+node_modules/
+.next/
+out/
+tsconfig.tsbuildinfo
+Dockerfile

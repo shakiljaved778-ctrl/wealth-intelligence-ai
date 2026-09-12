@@ -37,6 +37,12 @@ This directory holds IaC **stubs and notes** only. Add Terraform/CDK modules
 per component as the platform hardens (MVP uses docker-compose locally; see the
 repo-root `docker-compose.yml`).
 
+For a fast, shareable **preview** (frontend, plus an optional stateless backend)
+there is a Vercel path — `frontend/vercel.json`, `backend/vercel.json`, and
+[`../docs/09-deployment.md`](../docs/09-deployment.md). Vercel's global edge does
+**not** satisfy Qatar in-region residency, so production stays on the
+region-pinned AWS topology above; the Vercel config is for demos and previews.
+
 ## Security controls (SOC 2 / ISO 27001 direction)
 
 - Encryption at rest (KMS) and in transit (TLS 1.2+).
