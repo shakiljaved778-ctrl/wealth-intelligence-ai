@@ -104,6 +104,11 @@ export const api = {
 
   searchAssets: (q = ""): Promise<Asset[]> => req(`/assets?q=${encodeURIComponent(q)}`),
   getAsset: (id: string): Promise<Asset> => req(`/assets/${id}`),
+  getPrices: (
+    id: string,
+    limit = 60,
+  ): Promise<{ symbol: string; currency: string; bars: { ts: string; close: number }[] }> =>
+    req(`/assets/${id}/prices?limit=${limit}`),
   deepDive: (symbol: string, language: Lang): Promise<Envelope> =>
     req(`/assets/${symbol}/deep-dive`, { method: "POST", body: JSON.stringify({ language }) }),
 

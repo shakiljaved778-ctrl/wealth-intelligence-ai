@@ -24,6 +24,16 @@ const STRINGS: Dict = {
   auditTrail: { en: "Audit trail", ar: "سجل التدقيق" },
   disclaimer: { en: "Disclaimer", ar: "إخلاء المسؤولية" },
   login: { en: "Log in", ar: "تسجيل الدخول" },
+  insight: { en: "Insight", ar: "الرؤية" },
+  insightList: { en: "Insight List", ar: "قائمة الرؤى" },
+  insightSubtitle: {
+    en: "Goal-driven portfolio insights — observed, derived, explained.",
+    ar: "رؤى محفظة موجّهة بالأهداف — ملحوظة، مشتقة، ومُفسّرة.",
+  },
+  factorExposure: { en: "Factor exposure", ar: "التعرّض للعوامل" },
+  downloadReport: { en: "Download report", ar: "تنزيل التقرير" },
+  addFavourite: { en: "Add to favourites", ar: "أضف إلى المفضلة" },
+  priceHistory: { en: "Price history (daily close)", ar: "سجل الأسعار (الإغلاق اليومي)" },
 };
 
 export function t(key: keyof typeof STRINGS | string, lang: Lang): string {

@@ -7,7 +7,9 @@ export function Nav() {
   const { lang, setLang } = useLang();
   return (
     <nav className="nav">
-      <span className="brand">{t("appName", lang)}</span>
+      <Link href="/" className="brand" style={{ color: "#fff" }}>
+        {t("appName", lang)}
+      </Link>
       <Link href="/">{t("dashboard", lang)}</Link>
       <Link href="/portfolios">{t("portfolios", lang)}</Link>
       <Link href="/reports">{t("reports", lang)}</Link>
