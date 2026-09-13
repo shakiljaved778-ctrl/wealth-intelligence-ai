@@ -90,6 +90,49 @@ but is **not** a production posture. For anything beyond a demo:
    [`backend/app/main.py`](../backend/app/main.py) to the deployed frontend
    origin for `staging`/`prod`).
 
+## Troubleshooting
+
+### The frontend builds but shows no data / network errors in the browser
+
+This is almost always the env variable, because `NEXT_PUBLIC_API_BASE_URL` is
+**inlined at build time**, not read at runtime:
+
+1. It must be set in **Project → Settings → Environment Variables** for the
+   **Production** (and **Preview**) environment.
+2. After adding or changing it you must **redeploy** (a fresh build) — an
+   existing deployment keeps the value baked into its bundle. Changing the env
+   var alone does nothing until a rebuild.
+3. If it is unset, `lib/api.ts` and `next.config.js` fall back to
+   `http://localhost:8000`, so the browser tries to reach *the visitor's own
+   machine* and every API call fails. That is the classic "deployed but nothing
+   loads" symptom.
+
+Verify from the deployed page's devtools → Network: the requests should target
+your backend URL, not `localhost:8000`. If they hit localhost, the build did not
+receive the env var — re-check the variable's **environment scope** and redeploy.
+
+### The frontend deploy itself fails
+
+- Do **not** set `outputDirectory` for a Next.js app — the `nextjs` framework
+  preset manages output via Vercel's Build Output API. Overriding it (e.g. to
+  `.next`) makes Vercel treat that as a static folder and breaks the
+  server-rendered `/assets/[symbol]` route. This repo's `frontend/vercel.json`
+  intentionally sets only `framework` + `headers`.
+- Confirm **Root Directory = `frontend`** in project settings.
+
+### The backend function fails to build or 404s
+
+- Do **not** pin the Python runtime to a specific patch (e.g.
+  `@vercel/python@4.3.1`) — an unpublished version yields
+  *"The specified Runtime … can not be found."* Let the `.py` files under
+  `api/` auto-select the official runtime; `backend/vercel.json` only sets
+  `maxDuration` + the catch-all rewrite.
+- Confirm **Root Directory = `backend`**, that `backend/requirements.txt`
+  exists, and that `GET /health` returns `{"status":"ok"}`.
+- Remember the in-memory store is **not** shared across invocations (see the
+  statelessness note above) — data written in one request may vanish on the
+  next. That is expected on serverless, not a bug.
+
 ## Compliance notes
 
 - **Data residency:** Vercel's global edge is convenient for previews but does
