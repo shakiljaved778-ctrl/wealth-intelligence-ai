@@ -138,6 +138,11 @@ redeploy. Login errors also distinguish an unreachable API from bad credentials.
 - Remember the in-memory store is **not** shared across invocations (see the
   statelessness note above) — data written in one request may vanish on the
   next. That is expected on serverless, not a bug.
+- Demo data is seeded eagerly in `create_app()`, **not** only from the ASGI
+  `lifespan` startup — because Vercel's Python runtime does not reliably run
+  lifespan events. If it did, the repository would be empty and every login
+  would return `401`. If you ever see blanket 401s from a fresh backend deploy,
+  confirm this eager seed is present.
 
 ## Compliance notes
 

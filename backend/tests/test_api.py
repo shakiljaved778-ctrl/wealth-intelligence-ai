@@ -9,6 +9,24 @@ def test_auth_required(client):
     assert client.get("/v1/portfolios").status_code == 401
 
 
+def test_usable_without_lifespan():
+    # Some serverless runtimes (e.g. Vercel's Python runtime) do not run ASGI
+    # lifespan startup. create_app() seeds eagerly so the app is still usable.
+    # A plain TestClient (no context manager) does NOT run lifespan — mirroring
+    # that environment.
+    from fastapi.testclient import TestClient
+
+    from app.main import create_app
+
+    c = TestClient(create_app())
+    r = c.post(
+        "/v1/auth/token",
+        data={"username": "demo@wealthintelligence.ai", "password": "demo1234", "grant_type": "password"},
+    )
+    assert r.status_code == 200, "eager seed() must make login work without lifespan startup"
+    assert r.json()["access_token"]
+
+
 def test_deep_dive_returns_three_layer_envelope(client, auth_headers):
     r = client.post("/v1/assets/NVDA/deep-dive", json={"language": "en"}, headers=auth_headers)
     assert r.status_code == 200
