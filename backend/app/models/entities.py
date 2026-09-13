@@ -180,3 +180,25 @@ class UsageRecord(BaseModel):
     endpoint: str
     units: int = 1
     ts: datetime = Field(default_factory=_now)
+
+
+class Watchlist(BaseModel):
+    id: str = Field(default_factory=lambda: _id("wl"))
+    organization_id: str
+    owner_user_id: str | None = None
+    name: str
+    asset_ids: list[str] = Field(default_factory=list)
+    # Alert rule thresholds evaluated by the monitoring agent.
+    rules: dict[str, Any] = Field(default_factory=lambda: {"news_filings": True, "price_move_pct": 5.0})
+    created_at: datetime = Field(default_factory=_now)
+
+
+class Webhook(BaseModel):
+    id: str = Field(default_factory=lambda: _id("wh"))
+    organization_id: str
+    url: str
+    events: list[str] = Field(default_factory=lambda: ["alert.raised"])
+    # Signing secret; deliveries carry X-WIA-Signature = HMAC-SHA256(secret, body).
+    secret: str = ""
+    active: bool = True
+    created_at: datetime = Field(default_factory=_now)

@@ -23,6 +23,12 @@ dev = [
     "ruff>=0.4",
     "mypy>=1.9",
 ]
+# Real LLM provider (Anthropic). Optional so the scaffold installs and runs
+# offline on the stub; enable with `pip install -e ".[llm]"` and set
+# WIA_LLM_PROVIDER=anthropic + WIA_LLM_API_KEY.
+llm = [
+    "anthropic>=1.0",
+]
 
 [build-system]
 requires = ["setuptools>=68"]

@@ -76,6 +76,12 @@ def create_app() -> FastAPI:
     from app.api.v1.router import api_router
 
     app.include_router(api_router, prefix=settings.api_v1_prefix)
+
+    # Seed eagerly at construction, not only from `lifespan`: some serverless
+    # runtimes (e.g. Vercel's Python runtime) do not run ASGI lifespan startup
+    # events, which would leave the in-memory repository empty and every request
+    # unauthenticated. seed() is idempotent, so the lifespan call is then a no-op.
+    seed()
     return app
 
 

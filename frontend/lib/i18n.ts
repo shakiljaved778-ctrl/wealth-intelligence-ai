@@ -24,6 +24,35 @@ const STRINGS: Dict = {
   auditTrail: { en: "Audit trail", ar: "سجل التدقيق" },
   disclaimer: { en: "Disclaimer", ar: "إخلاء المسؤولية" },
   login: { en: "Log in", ar: "تسجيل الدخول" },
+  insight: { en: "Insight", ar: "الرؤية" },
+  insightList: { en: "Insight List", ar: "قائمة الرؤى" },
+  insightSubtitle: {
+    en: "Goal-driven portfolio insights — observed, derived, explained.",
+    ar: "رؤى محفظة موجّهة بالأهداف — ملحوظة، مشتقة، ومُفسّرة.",
+  },
+  factorExposure: { en: "Factor exposure", ar: "التعرّض للعوامل" },
+  downloadReport: { en: "Download report", ar: "تنزيل التقرير" },
+  addFavourite: { en: "Add to favourites", ar: "أضف إلى المفضلة" },
+  priceHistory: { en: "Price history (daily close)", ar: "سجل الأسعار (الإغلاق اليومي)" },
+  portfoliosSubtitle: {
+    en: "Model & client portfolios — analyze risk, factors, and scenarios.",
+    ar: "محافظ نموذجية ومحافظ عملاء — تحليل المخاطر والعوامل والسيناريوهات.",
+  },
+  reportsSubtitle: {
+    en: "Client-ready reports in English & Arabic — generated asynchronously.",
+    ar: "تقارير جاهزة للعملاء بالإنجليزية والعربية — تُنشأ بشكل غير متزامن.",
+  },
+  holdings: { en: "Holdings", ar: "المكوّنات" },
+  requestReport: { en: "Request report", ar: "طلب تقرير" },
+  refresh: { en: "Refresh", ar: "تحديث" },
+  subjectSymbol: { en: "Subject symbol", ar: "رمز الأصل" },
+  kind: { en: "Kind", ar: "النوع" },
+  noReports: { en: "No reports yet.", ar: "لا توجد تقارير بعد." },
+  apiEndpoint: { en: "API endpoint", ar: "نقطة اتصال الواجهة" },
+  apiMisconfigured: {
+    en: "This site is deployed but the API URL still points at localhost. Set NEXT_PUBLIC_API_BASE_URL in your host's environment variables and redeploy (it is baked in at build time).",
+    ar: "تم نشر هذا الموقع لكن عنوان الواجهة لا يزال يشير إلى localhost. عيّن NEXT_PUBLIC_API_BASE_URL في متغيرات البيئة لدى مزوّد الاستضافة ثم أعد النشر (يُدمج وقت البناء).",
+  },
 };
 
 export function t(key: keyof typeof STRINGS | string, lang: Lang): string {

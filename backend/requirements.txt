@@ -1,0 +1,14 @@
+# Runtime dependencies for the Vercel Python serverless function (api/index.py).
+# Mirrors the [project].dependencies in pyproject.toml (the source of truth for
+# local/dev installs via `pip install -e ".[dev]"`). Keep the two in sync.
+#
+# The optional Anthropic LLM provider is intentionally omitted here; the engine
+# falls back to the deterministic offline stub when it is absent. To enable a
+# real model on Vercel, add `anthropic>=1.0` and set WIA_LLM_PROVIDER=anthropic
+# plus WIA_LLM_API_KEY in the project's environment variables.
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+pydantic-settings>=2.2
+python-jose[cryptography]>=3.3
+python-multipart>=0.0.9

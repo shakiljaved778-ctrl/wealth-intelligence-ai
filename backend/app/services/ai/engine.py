@@ -210,6 +210,79 @@ def analyze_portfolio(*, portfolio: Portfolio, gctx: GuardrailContext, scenarios
     return apply(env, gctx)
 
 
+# --- 2b. portfolio construction ---------------------------------------------
+# Target factor tilts per risk profile (illustrative; a real optimizer would
+# solve under the full constraint set).
+_PROFILE_TILT = {
+    "conservative": {"quality": 1.0, "volatility": -1.0, "value": 0.5},
+    "balanced": {"quality": 0.5, "momentum": 0.3, "value": 0.3},
+    "growth": {"growth": 1.0, "momentum": 0.8, "quality": 0.2},
+}
+
+
+def construct_portfolio(
+    *, assets: list[Asset], risk_profile: str, max_position_weight: float, gctx: GuardrailContext
+) -> Envelope:
+    """Suggest model-portfolio weights under constraints. Suggestions only."""
+    llm = get_llm()
+    env = Envelope(language=gctx.language)
+    tilt = _PROFILE_TILT.get(risk_profile, _PROFILE_TILT["balanced"])
+
+    # Score each asset by alignment with the profile's factor tilt.
+    raw_scores: dict[str, float] = {}
+    for asset in assets:
+        factors = _factor_scores_for(asset)
+        score = sum(tilt.get(f, 0.0) * v for f, v in factors.items())
+        raw_scores[asset.symbol] = max(score, 0.01)  # keep positive for weighting
+
+    total = sum(raw_scores.values()) or 1.0
+    weights = {s: v / total for s, v in raw_scores.items()}
+    # Enforce the max-position-weight constraint, redistributing the excess.
+    weights = _cap_weights(weights, max_position_weight)
+
+    env.derived.append(
+        Derived(
+            metric="target_weights",
+            value={s: round(w, 4) for s, w in weights.items()},
+            methodology="Factor-tilt score per risk profile, normalized to weights, "
+            "capped at max_position_weight with excess redistributed pro-rata.",
+            parameters={"risk_profile": risk_profile, "max_position_weight": max_position_weight},
+            model_version=analytics.MODEL_VERSION,
+        )
+    )
+    system = (
+        "Explain the suggested model-portfolio construction in plain language. "
+        "Cite the target weights. This is a suggestion, not personalized advice."
+    )
+    result = llm.complete(system=system, prompt=_grounded_context(env, []), language=gctx.language)
+    env.narrative.append(
+        Narrative(text=result.text, citations=["der:target_weights"], kind="interpretation", section="construction")
+    )
+    gctx.models = [
+        {"name": result.model_name, "version": result.model_version},
+        {"name": "risk-core", "version": analytics.MODEL_VERSION},
+    ]
+    gctx.parameters = {"risk_profile": risk_profile, "max_position_weight": max_position_weight}
+    return apply(env, gctx)
+
+
+def _cap_weights(weights: dict[str, float], cap: float) -> dict[str, float]:
+    """Cap each weight at ``cap``, redistributing excess to uncapped names."""
+    w = dict(weights)
+    for _ in range(len(w)):  # iterate to convergence (bounded)
+        excess = sum(v - cap for v in w.values() if v > cap)
+        if excess <= 1e-9:
+            break
+        uncapped = {k: v for k, v in w.items() if v < cap}
+        room = sum(cap - v for v in uncapped.values()) or 1.0
+        for k in w:
+            if w[k] >= cap:
+                w[k] = cap
+            elif k in uncapped:
+                w[k] += excess * (cap - uncapped[k]) / room
+    return w
+
+
 # --- 3. signal generation ---------------------------------------------------
 def generate_signal(*, asset: Asset, horizon: str, gctx: GuardrailContext) -> dict:
     llm = get_llm()
