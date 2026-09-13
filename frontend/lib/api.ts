@@ -1,8 +1,21 @@
 // Typed API client for the Wealth Intelligence AI backend.
 // Mirrors the three-layer envelope contract (see backend docs/02-data-model.md).
 
-const BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
-const V1 = `${BASE}/v1`;
+// Resolved at BUILD time (NEXT_PUBLIC_* is inlined by Next). If this stays at
+// the localhost default on a deployed site, NEXT_PUBLIC_API_BASE_URL was not set
+// for the build — see docs/09-deployment.md.
+export const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+const V1 = `${API_BASE}/v1`;
+
+/** Cheap connectivity probe against the backend's public /health endpoint. */
+export async function apiHealth(): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE}/health`, { method: "GET" });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
 
 export type Lang = "en" | "ar";
 
@@ -91,12 +104,19 @@ async function req<T>(path: string, init: RequestInit = {}): Promise<T> {
 export const api = {
   async login(email: string, password: string): Promise<string> {
     const form = new URLSearchParams({ username: email, password, grant_type: "password" });
-    const res = await fetch(`${V1}/auth/token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: form.toString(),
-    });
-    if (!res.ok) throw new Error("login failed");
+    let res: Response;
+    try {
+      res = await fetch(`${V1}/auth/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: form.toString(),
+      });
+    } catch (e) {
+      // Network-level failure (unreachable host, CORS, DNS) — almost always a
+      // misconfigured API URL on a deployment.
+      throw new Error(`Cannot reach the API at ${API_BASE}. Verify NEXT_PUBLIC_API_BASE_URL and that the backend is deployed. (${String(e)})`);
+    }
+    if (!res.ok) throw new Error(`Login failed (HTTP ${res.status}). Check the credentials, or the API URL ${API_BASE}.`);
     const data = (await res.json()) as { access_token: string };
     setToken(data.access_token);
     return data.access_token;

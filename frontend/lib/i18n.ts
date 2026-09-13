@@ -48,6 +48,11 @@ const STRINGS: Dict = {
   subjectSymbol: { en: "Subject symbol", ar: "رمز الأصل" },
   kind: { en: "Kind", ar: "النوع" },
   noReports: { en: "No reports yet.", ar: "لا توجد تقارير بعد." },
+  apiEndpoint: { en: "API endpoint", ar: "نقطة اتصال الواجهة" },
+  apiMisconfigured: {
+    en: "This site is deployed but the API URL still points at localhost. Set NEXT_PUBLIC_API_BASE_URL in your host's environment variables and redeploy (it is baked in at build time).",
+    ar: "تم نشر هذا الموقع لكن عنوان الواجهة لا يزال يشير إلى localhost. عيّن NEXT_PUBLIC_API_BASE_URL في متغيرات البيئة لدى مزوّد الاستضافة ثم أعد النشر (يُدمج وقت البناء).",
+  },
 };
 
 export function t(key: keyof typeof STRINGS | string, lang: Lang): string {

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { api, getToken, type Envelope, type Portfolio } from "@/lib/api";
+import { api, getToken, API_BASE, type Envelope, type Portfolio } from "@/lib/api";
 import { useLang } from "./providers";
 import { t } from "@/lib/i18n";
 import { BarChart, type Bar } from "@/components/BarChart";
@@ -24,7 +24,19 @@ export default function Dashboard() {
   const [fav, setFav] = useState(false);
   const [reportMsg, setReportMsg] = useState("");
 
+  const [remoteHost, setRemoteHost] = useState(false);
+
   useEffect(() => setAuthed(!!getToken()), []);
+  useEffect(() => {
+    // Deployed (non-local) host? Computed client-side to avoid hydration mismatch.
+    const h = window.location.hostname;
+    setRemoteHost(!["localhost", "127.0.0.1", "0.0.0.0", ""].includes(h));
+  }, []);
+
+  // Classic "deployed but nothing loads": the build never received the API URL,
+  // so the browser is trying to call the visitor's own machine.
+  const apiPointsLocal = /localhost|127\.0\.0\.1/.test(API_BASE);
+  const apiMisconfigured = remoteHost && apiPointsLocal;
 
   useEffect(() => {
     if (!authed) return;
@@ -141,6 +153,10 @@ export default function Dashboard() {
           />
           <button onClick={doLogin}>{t("login", lang)}</button>
           {error && <p className="muted">{error}</p>}
+          {apiMisconfigured && <p className="notice">{t("apiMisconfigured", lang)}</p>}
+          <p className="muted" style={{ marginBottom: 0 }}>
+            {t("apiEndpoint", lang)}: <code>{API_BASE}</code>
+          </p>
         </div>
       </div>
     );

@@ -111,6 +111,12 @@ Verify from the deployed page's devtools → Network: the requests should target
 your backend URL, not `localhost:8000`. If they hit localhost, the build did not
 receive the env var — re-check the variable's **environment scope** and redeploy.
 
+To make this self-evident, the login screen shows the resolved **API endpoint**
+it was built with, and — when the site is served from a non-local host but the
+API URL still points at `localhost` — a red warning saying the env var wasn't
+set at build time. If you see that warning, set `NEXT_PUBLIC_API_BASE_URL` and
+redeploy. Login errors also distinguish an unreachable API from bad credentials.
+
 ### The frontend deploy itself fails
 
 - Do **not** set `outputDirectory` for a Next.js app — the `nextjs` framework
